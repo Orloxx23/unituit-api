@@ -30,7 +30,7 @@ app.use(helmet());
 app.use(morgan("common"));
 app.use(express.urlencoded({ extended: true }));
 
-let whitelist = ["https://unituit-client.vercel.app", "http://localhost"];
+let whitelist = ["https://unituit-client.vercel.app", "http://localhost:3000"];
 let corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
