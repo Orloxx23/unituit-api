@@ -30,26 +30,9 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 
-let whitelist = [
-  "https://unituit-client.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:8800",
-];
-let corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
-
 const port = process.env.PORT || 8800;
 
-if (port !== 8800) {
-  app.use(cors(corsOptions));
-}
+app.use(cors());
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
