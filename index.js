@@ -27,10 +27,14 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 //middleware
 app.use(express.json());
 app.use(helmet());
-app.use(morgan("common"));
+app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 
-let whitelist = ["https://unituit-client.vercel.app", "http://localhost:3000"];
+let whitelist = [
+  "https://unituit-client.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:8800",
+];
 let corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -41,7 +45,11 @@ let corsOptions = {
   },
 };
 
-app.use(cors(corsOptions));
+const port = process.env.PORT || 8800;
+
+if (port !== 8800) {
+  app.use(cors(corsOptions));
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -65,8 +73,6 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/subscription", subscriptionRoute);
-
-const port = process.env.PORT || 8800;
 
 app.listen(port, () => {
   console.log("Backend server is running! Port: " + port);
