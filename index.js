@@ -11,7 +11,7 @@ const postRoute = require("./routes/posts");
 const subscriptionRoute = require("./routes/subscription");
 const router = express.Router();
 const path = require("path");
-//const cors = require("cors");
+const cors = require("cors");
 
 dotenv.config();
 
@@ -30,7 +30,12 @@ app.use(helmet());
 app.use(morgan("common"));
 app.use(express.urlencoded({ extended: true }));
 
-//app.use(cors());
+let corsOptions = {
+  origin: 'https://unituit-client.vercel.app',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.use(cors(corsOptions));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
