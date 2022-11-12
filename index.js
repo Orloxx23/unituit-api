@@ -1,5 +1,5 @@
 const express = require("express");
-const app = express();
+const { createServer } = require("http");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
@@ -12,6 +12,9 @@ const subscriptionRoute = require("./routes/subscription");
 const router = express.Router();
 const path = require("path");
 const cors = require("cors");
+const { Server } = require("socket.io");
+
+const app = express();
 
 dotenv.config();
 
@@ -57,6 +60,50 @@ app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/subscription", subscriptionRoute);
 
-app.listen(port, () => {
+const httpServer = createServer(app);
+
+httpServer.listen(port, () => {
   console.log("Backend server is running! Port: " + port);
 });
+
+// Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+let onlineUsers = [];
+
+const addUser = (userId, socketId) => {
+  !onlineUsers.some((user) => user.userId === userId) &&
+    onlineUsers.push({ userId, socketId });
+};
+
+const removeUser = (socketId) => {
+  onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
+};
+
+const getUser = (userId) => {
+  return onlineUsers.find((user) => user.userId === userId);
+};
+
+io.on("connection", (socket) => {
+  socket.on("addUser", (userId) => {
+    addUser(userId, socket.id);
+    io.emit("getUsers", onlineUsers);
+  });
+
+  socket.on("likePost", ({ senderId, receiverId, postId }) => {
+    const receiver = getUser(receiverId);
+    console.log("enviando a ", receiver);
+    io.to(receiver.socketId).emit("getLikePost", { senderId, postId });
+  });
+
+  socket.on("disconnect", () => {
+    removeUser(socket.id);
+    io.emit("getUsers", onlineUsers);
+  });
+});
+
+io.listen(5000);
