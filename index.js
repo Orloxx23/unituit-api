@@ -33,9 +33,11 @@ app.use(helmet());
 app.use(morgan("dev"));
 //app.use(express.urlencoded({ extended: true }));
 
+const whitelist = ['https://unituit-client.vercel.app']
+
 const port = process.env.PORT || 8800;
 
-app.use(cors());
+app.use(cors({ origin: whitelist }));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -65,7 +67,7 @@ const httpServer = createServer(app);
 // Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: "https://unituit-client.vercel.app",
   },
 });
 
