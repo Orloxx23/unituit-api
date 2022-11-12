@@ -62,10 +62,6 @@ app.use("/api/subscription", subscriptionRoute);
 
 const httpServer = createServer(app);
 
-httpServer.listen(port, () => {
-  console.log("Backend server is running! Port: " + port);
-});
-
 // Socket.io
 const io = new Server(httpServer, {
   cors: {
@@ -106,4 +102,6 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(5000);
+httpServer.listen(port, () => {
+  console.log("Backend server is running! Port: " + port);
+});
