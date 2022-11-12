@@ -8,7 +8,6 @@ const multer = require("multer");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
-const subscriptionRoute = require("./routes/subscription");
 const router = express.Router();
 const path = require("path");
 const cors = require("cors");
@@ -60,7 +59,6 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
-app.use("/api/subscription", subscriptionRoute);
 
 const httpServer = createServer(app);
 
