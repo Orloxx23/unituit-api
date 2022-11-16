@@ -67,17 +67,10 @@ const httpServer = createServer(app);
 
 // Socket.io
 const io = new Server(httpServer, {
-  // cors: {
-  //   origin: "https://unituit-client.vercel.app"
-  //   //origin: "http://localhost:3000",
-  //   // origin: function (origin, callback) {
-  //   //   if (whitelist.indexOf(origin) > -1) {
-  //   //     callback(null, true);
-  //   //   } else {
-  //   //     callback(null, false);
-  //   //   }
-  //   // },
-  // },
+  cors: {
+    origin: "https://unituit-client.vercel.app",
+    credentials: true
+  }
 });
 
 let onlineUsers = [];
