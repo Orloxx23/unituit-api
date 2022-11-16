@@ -33,12 +33,36 @@ router.put("/:id/notification", async (req, res) => {
       const user = await User.findByIdAndUpdate(req.params.id, {
         $set: req.body,
       });
-      res.header("Access-Control-Allow-Origin", "https://unituit-client.vercel.app");
+      res.header(
+        "Access-Control-Allow-Origin",
+        "https://unituit-client.vercel.app"
+      );
       res.status(200).json("Notification added");
     } catch (err) {
       return res.status(500).json(err);
     }
   }
+});
+
+router.put("/:id/readnoti", async (req, res) => {
+  //if (req.body.userId !== req.params.id) {
+  try {
+    const currentUser = await User.findById(req.body.userId);
+    //if (currentUser.notifications.includes(req.body.notification)) {
+      await currentUser.updateOne({
+        $pull: { notifications: req.body.notification },
+      });
+      res.status(200).json("bye noti");
+    // } else {
+    //   res.status(403).json("You can't do that");
+    // }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+  //} else {
+  //res.status(403).json("You can't do that");
+  //}
 });
 
 //delete user
