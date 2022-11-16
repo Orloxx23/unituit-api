@@ -33,7 +33,7 @@ router.put("/:id/notification", async (req, res) => {
       const user = await User.findByIdAndUpdate(req.params.id, {
         $set: req.body,
       });
-      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Origin", "https://unituit-client.vercel.app");
       res.status(200).json("Notification added");
     } catch (err) {
       return res.status(500).json(err);
