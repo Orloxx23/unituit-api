@@ -32,7 +32,10 @@ app.use(helmet());
 app.use(morgan("dev"));
 //app.use(express.urlencoded({ extended: true }));
 
-const whitelist = ['https://unituit-client.vercel.app']
+const whitelist = [
+  "https://unituit-client.vercel.app",
+  "http://localhost:3000",
+];
 
 const port = process.env.PORT || 8800;
 
@@ -65,7 +68,14 @@ const httpServer = createServer(app);
 // Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://unituit-client.vercel.app",
+    //origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) > -1) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
   },
 });
 
@@ -90,10 +100,31 @@ io.on("connection", (socket) => {
     io.emit("getUsers", onlineUsers);
   });
 
-  socket.on("likePost", ({ senderId, receiverId, postId }) => {
-    const receiver = getUser(receiverId);
-    console.log("enviando a ", receiver);
-    io.to(receiver.socketId).emit("getLikePost", { senderId, postId });
+  socket.on("newNotification", ({ senderId, receiverId, type, text }) => {
+    switch (type) {
+      case "like":
+        const receiverl = getUser(receiverId);
+        console.log("enviando a ", receiverl);
+        io.to(receiverl.socketId).emit("getNotification", { senderId, type });
+        break;
+      case "post":
+        receiverId.forEach((follower) => {
+          const user = getUser(follower);
+          if (user) {
+            io.to(user.socketId).emit("getNotification", {
+              senderId,
+              type,
+              text,
+            });
+          }
+        });
+        break;
+      case "follow":
+        const receiverf = getUser(receiverId);
+        console.log("enviando a ", receiverf);
+        io.to(receiverf.socketId).emit("getNotification", { senderId, type });
+        break;
+    }
   });
 
   socket.on("disconnect", () => {

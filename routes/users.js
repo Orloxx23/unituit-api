@@ -26,6 +26,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// add notification
+router.put("/:id/notification", async (req, res) => {
+  if (req.body.notifications) {
+    try {
+      const user = await User.findByIdAndUpdate(req.params.id, {
+        $set: req.body,
+      });
+      res.status(200).json("Notification added");
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  }
+});
+
 //delete user
 router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.body.isAdmin) {
@@ -61,7 +75,7 @@ router.get("/friends/:userId", async (req, res) => {
     const user = await User.findById(req.params.userId);
     const friends = await Promise.all(
       user.followings.map((friendId) => {
-          return User.findById(friendId);
+        return User.findById(friendId);
       })
     );
     let friendList = [];
