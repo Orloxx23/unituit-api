@@ -31,7 +31,7 @@ router.put("/:id/notification", async (req, res) => {
   if (req.body.notifications) {
     try {
       const user = await User.findByIdAndUpdate(req.params.id, {
-        $set: req.body,
+        $push: req.body,
       });
       res.header(
         "Access-Control-Allow-Origin",
